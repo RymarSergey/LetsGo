@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type human struct {
 	firstName  string
 	secondName string
@@ -36,9 +38,19 @@ type teacher struct {
 	NumberOfStudents int    `json:"number_of_students" xml:"number_of_students"`
 }
 
-
 func main() {
+	callPanic()
+	callPanic1()
 
+}
 
+func callPanic1() {
+	var panicProgramer *programmer
+	panicProgramer.Languages = []string{"Go", "Java", "C++"}
+	fmt.Printf("I know the following languages %v", panicProgramer.Languages)
+}
 
+func callPanic() {
+	var panicTeacher *teacher
+	panicTeacher.NumberOfStudents = 2
 }
