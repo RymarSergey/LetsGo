@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 type human struct {
@@ -103,8 +104,13 @@ func (resiver teacher) getName() string {
 	return resiver.firstName
 }
 
+type myCancurentMap struct {
+	sync.RWMutex
+	mapSync map[worker]bool
+}
+
 func main() {
-	workerBoolMap := make(map[worker]bool, 5)
+	workerBoolMap := make(map[worker]bool, 6)
 	doctor1 := doctor{
 		human: human{
 			firstName:  "Sergey",
@@ -122,7 +128,7 @@ func main() {
 			age:        18,
 		},
 		Profession: "manager",
-		Position:   "2",
+		Position:   "boss",
 	}
 	workerBoolMap[manager1] = true
 	sportsmen1 := sportsmen{
@@ -156,23 +162,32 @@ func main() {
 		Field:            "Go",
 		NumberOfStudents: 4,
 		Profession:       "teacher",
-		Position:         "5",
+		Position:         "boss",
 	}
 	workerBoolMap[teacher1] = true
-
-	//var slWorkers []worker
-
-	for key, _ := range workerBoolMap {
-
-		fmt.Println(key)
-		h, err := workerToHuman(key)
-		if err == nil {
-			fmt.Println(h)
+	var wg sync.WaitGroup
+	wg.Add(2) // в группе две горутины
+	mWM := new(myCancurentMap)
+	mWM.mapSync = workerBoolMap
+	work := func(workerBoolMap *myCancurentMap, indx int) {
+		defer wg.Done()
+		workerBoolMap.Lock()
+		for key := range workerBoolMap.mapSync {
+			if key.getPosition() == "boss" && indx == 1 {
+				//println("Gorutine -",indx,"  BOSS : ", key.getName(),key.getPosition())
+				fmt.Println("Gorutine -", indx, "  BOSS : ", key.getName(), key.getPosition())
+			}
+			if key.getPosition() != "boss" && indx == 2 {
+				//println("Gorutine -",indx,"  Worker : ", key.getName(),key.getProfession())
+				fmt.Println("Gorutine -", indx, "  Worker : ", key.getName(), key.getProfession())
+			}
 		}
-
-		fmt.Println("===========================================")
+		workerBoolMap.Unlock()
 	}
-
+	// вызываем горутины
+	go work(mWM, 2)
+	go work(mWM, 1)
+	wg.Wait()
 }
 
 func workerToHuman(w worker) (h human, err error) {
@@ -195,7 +210,6 @@ func workerToHuman(w worker) (h human, err error) {
 			h.firstName = d.firstName
 			h.secondName = d.secondName
 		}*/
-
 	case sportsmen:
 		d := w.(sportsmen)
 		h.age = d.age
