@@ -174,11 +174,9 @@ func main() {
 		workerBoolMap.Lock()
 		for key := range workerBoolMap.mapSync {
 			if key.getPosition() == "boss" && indx == 1 {
-				//println("Gorutine -",indx,"  BOSS : ", key.getName(),key.getPosition())
 				fmt.Println("Gorutine -", indx, "  BOSS : ", key.getName(), key.getPosition())
 			}
 			if key.getPosition() != "boss" && indx == 2 {
-				//println("Gorutine -",indx,"  Worker : ", key.getName(),key.getProfession())
 				fmt.Println("Gorutine -", indx, "  Worker : ", key.getName(), key.getProfession())
 			}
 		}
@@ -188,6 +186,7 @@ func main() {
 	go work(mWM, 2)
 	go work(mWM, 1)
 	wg.Wait()
+
 }
 
 func workerToHuman(w worker) (h human, err error) {
