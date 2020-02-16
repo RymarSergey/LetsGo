@@ -155,9 +155,12 @@ func main() {
 		Profession:       "teacher",
 		Position:         "5",
 	}
+
+	s := worker(teacher1)
+	fmt.Println(s, " type -", reflect.TypeOf(s))
 	workerBoolMap[teacher1] = true
 
-	for key, _ := range workerBoolMap {
+	for key := range workerBoolMap {
 		fmt.Println("Name=", key.getName(), " Profession=", key.getProfession(), " Position=", key.getPosition())
 	}
 
@@ -168,7 +171,7 @@ func main() {
 }
 func returnType(cash map[worker]bool) map[string]reflect.Type {
 	result := make(map[string]reflect.Type)
-	for key, _ := range cash {
+	for key := range cash {
 		result[key.getProfession()] = reflect.TypeOf(key)
 	}
 	return result
