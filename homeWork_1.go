@@ -1,8 +1,8 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"reflect"
 )
 
 type human struct {
@@ -11,6 +11,9 @@ type human struct {
 	age        uint8
 }
 
+type boss interface {
+	bossPosition()
+}
 type worker interface {
 	getProfession() string
 	getPosition() string
@@ -155,24 +158,79 @@ func main() {
 		Profession:       "teacher",
 		Position:         "5",
 	}
-
-	s := worker(teacher1)
-	fmt.Println(s, " type -", reflect.TypeOf(s))
 	workerBoolMap[teacher1] = true
 
-	for key := range workerBoolMap {
-		fmt.Println("Name=", key.getName(), " Profession=", key.getProfession(), " Position=", key.getPosition())
+	//var slWorkers []worker
+
+	for key, _ := range workerBoolMap {
+
+		fmt.Println(key)
+		h, err := workerToHuman(key)
+		if err == nil {
+			fmt.Println(h)
+		}
+
+		fmt.Println("===========================================")
 	}
 
-	fmt.Println(" ===================================================")
-	for key, value := range returnType(workerBoolMap) {
-		fmt.Println(" Profession=", key, " Type=", value)
-	}
 }
-func returnType(cash map[worker]bool) map[string]reflect.Type {
-	result := make(map[string]reflect.Type)
-	for key := range cash {
-		result[key.getProfession()] = reflect.TypeOf(key)
+
+func workerToHuman(w worker) (h human, err error) {
+
+	switch w.(type) {
+	case doctor:
+		d := w.(doctor)
+		h.age = d.age
+		h.firstName = d.firstName
+		h.secondName = d.secondName
+		err = nil
+	case manager:
+		d := w.(manager)
+		h.age = d.age
+		h.firstName = d.firstName
+		h.secondName = d.secondName
+		err = nil
+		/*if d, ok := w.(manager); ok {
+			h.age = d.age
+			h.firstName = d.firstName
+			h.secondName = d.secondName
+		}*/
+
+	case sportsmen:
+		d := w.(sportsmen)
+		h.age = d.age
+		h.firstName = d.firstName
+		h.secondName = d.secondName
+		err = nil
+		/*if d, ok := w.(sportsmen); ok {
+			h.age = d.age
+			h.firstName = d.firstName
+			h.secondName = d.secondName
+		}*/
+	case programmer:
+		d := w.(programmer)
+		h.age = d.age
+		h.firstName = d.firstName
+		h.secondName = d.secondName
+		err = nil
+		/*if d, ok := w.(programmer); ok {
+			h.age = d.age
+			h.firstName = d.firstName
+			h.secondName = d.secondName
+		}*/
+	case teacher:
+		d := w.(teacher)
+		h.age = d.age
+		h.firstName = d.firstName
+		h.secondName = d.secondName
+		err = nil
+		/*if d, ok := w.(teacher); ok {
+			h.age = d.age
+			h.firstName = d.firstName
+			h.secondName = d.secondName
+		}*/
+	default:
+		err = errors.New("Do not convert to human! ")
 	}
-	return result
+	return
 }
