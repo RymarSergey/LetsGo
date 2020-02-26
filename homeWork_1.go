@@ -110,7 +110,7 @@ type myCancurentMap struct {
 }
 
 func main() {
-	workerBoolMap := make(map[worker]bool, 6)
+	workerBoolMap := make(map[worker]bool)
 	doctor1 := doctor{
 		human: human{
 			firstName:  "Sergey",
@@ -169,10 +169,20 @@ func main() {
 	wg.Add(2) // в группе две горутины
 	mWM := new(myCancurentMap)
 	mWM.mapSync = workerBoolMap
+	//var flag int
 	work := func(workerBoolMap *myCancurentMap, indx int) {
+		/*for {
+			if indx == 1 {
+				break
+			}else {
+				time.Sleep(time.Second*1)
+				break
+			}
+		}*/
 		defer wg.Done()
 		workerBoolMap.Lock()
 		for key := range workerBoolMap.mapSync {
+
 			if key.getPosition() == "boss" && indx == 1 {
 				fmt.Println("Gorutine -", indx, "  BOSS : ", key.getName(), key.getPosition())
 			}
@@ -181,6 +191,7 @@ func main() {
 			}
 		}
 		workerBoolMap.Unlock()
+
 	}
 	// вызываем горутины
 	go work(mWM, 2)
